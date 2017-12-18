@@ -14,7 +14,6 @@
 
     <webopt:bundlereference runat="server" path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-
 </head>
 <body>
     <form runat="server">
@@ -176,14 +175,17 @@
             
                             <div class="alert alert-danger d-none" id="newsletterError"></div>
             
-                            <form id="newsletterForm" action="php/newsletter-subscribe.php" method="POST">
+                            <form id="newsletterForm" method="post">
                                 <div class="input-group">
-                                    <input class="form-control form-control-sm" placeholder="Email Address" name="newsletterEmail" id="newsletterEmail" type="text">
+                                    <!--<input class="form-control form-control-sm" placeholder="Email Address" name="newsletterEmail" id="newsletterEmail" type="text">-->
+                                    <asp:TextBox id="newsletterEmail" class="form-control form-control-sm" runat="server" />
                                     <span class="input-group-btn">
-                                        <button class="btn btn-light" type="submit">Go!</button>
+                                        <!--<button class="btn btn-light" type="submit">Go!</button>-->
+                                        <!--<input type="button" class="btn btn-light" id="btnSaveSubscriber" value="Go" />-->
+                                        <asp:Button ID="btnSaveSubscriber" class="btn btn-light" runat="server" Text="Go" />
                                     </span>
                                 </div>
-                            </form>
+                            </form>                            
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -258,8 +260,8 @@
     <script src="Scripts/theme.js"></script>
     
     <!-- Current Page Vendor and Views -->    
-    <%string url = Request.Url.Segments.Last();%>            
-    <%if(url == "default.aspx") {%>
+    <%string link = Request.Url.Segments.Last();%>            
+    <%if(link == "default.aspx") {%>
     <script src="vendor/rs-plugin/js/jquery.themepunch.tools.min.js"></script>
     <script src="vendor/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
     <script src="vendor/circle-flip-slideshow/js/jquery.flipshow.min.js"></script>
@@ -269,6 +271,34 @@
 
     <script src="Scripts/custom.js"></script>
     <script src="Scripts/theme.init.js"></script>
+
+    <script>        
+        $(function () {
+            $("#btnSaveSubscriber").on("click", function () {
+                var newsletter = {};
+                newsletter.Email = $("#newsletterEmail").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "Default.aspx/SaveUser",
+                    data: '{newsletter: ' + JSON.stringify(newsletter) + '}',                    
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "text",
+                    success: function (data) {
+                        alert("You are successfully subscribed!");
+                        location.reload();
+                    },
+                    error: function (textStatus, errorThrown) {
+                        callbackfn("Error getting the data")
+                    }
+                });
+                
+                function callbackfn(data) {
+                    alert(data);
+                }
+            });                
+        });
+    </script>
 
 </body>
 </html>
